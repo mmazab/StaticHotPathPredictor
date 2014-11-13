@@ -18,19 +18,27 @@ struct MLStatic : public ModulePass {
 	static char ID;
    	MLStatic() : ModulePass(ID) {}
 	bool runOnModule(Module &F);
+	//trace all paths starting from entry BB of a function
 	void tracePath(BasicBlock *BB);
+	//TO DO: Not sure if required. Authors replace function calls in CFG by CFG of called functions. But will decide later. 
 	void mergePath(Module &M);
+	//Expand basic blocks to get path at instruction level
 	void expandPathAll(Module &M);
 	void expandPath(std::vector<BasicBlock *>, Function * F);
+	//A stack to store BB on current path
 	std::vector<BasicBlock *> path;
 
+	//List of all paths for a given function. Ex pathCollecn2[F][0] would give the first path (stored as vector of BB) for function F. 
 	std::map<Function *, std::vector<std::vector<BasicBlock *> > >  pathCollecn2;
+	//Not used currently
 	std::vector<std::vector<BasicBlock *> >  pathCollecn;
+	//Same as pathCollecn2, but Instruction instead of BB
 	std::map<Function *, std::vector<std::vector<Instruction *> > > expandedPath;
 	DominatorTree * DT;
 	void getAnalysisUsage(AnalysisUsage &AU) const;
 };
 
+//Get all possible execution paths for a function. Ignoring the backedges for now
 void MLStatic::tracePath(BasicBlock *BB){
 
 	path.push_back(BB);
@@ -120,7 +128,7 @@ void MLStatic::expandPath(std::vector<BasicBlock *> tpath, Function *F){
 	expandedPath[F].push_back(temp);
 
 }
-
+//Expand Basic Blocks to have path in terms of instructions.
 void  MLStatic::expandPathAll(Module &M){
 
 	
@@ -143,6 +151,7 @@ void  MLStatic::expandPathAll(Module &M){
 	}
 }
 
+//TO DO: Replace call site by actual cfg
 void MLStatic::mergePath(Module &M){
 
 	//Not Sure if to replace function call by actual path
