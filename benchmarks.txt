@@ -1,0 +1,19 @@
+Some of benchmarks are large files, so can't be pushed on github. I am listing benchmarks here
+
+MEDIA BENCHMARKS
+http://euler.slu.edu/~fritts/mediabench/
+
+cBench
+http://sourceforge.net/projects/cbench/files/latest/download
+
+WCET benchmarks
+http://www.mrtc.mdh.se/projects/wcet/benchmarks.html
+
+BioBench
+http://www.ece.umd.edu/biobench/
+
+Pointer Intensive Benchmarks
+http://pages.cs.wisc.edu/~austin/ptr-dist.html
+
+
+
