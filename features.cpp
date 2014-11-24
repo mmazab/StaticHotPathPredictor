@@ -57,7 +57,7 @@ struct features{
 	int loopCount;
 	float avgLoopDepth;
 	float avgLoopExits;
-	long loopHighInstCnt;
+	int loopHighInstCnt;
 	float avgBBLoops;
 	int condTrueLoops;
 	int eqCmp;
@@ -68,6 +68,104 @@ struct features{
 	int sideEnt;
 };
 
+void printFeatures(struct features f){
+	DEBUG(dbgs()<<"Inst Count:"<<f.instcount);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"Cond Count:"<<f.condcount);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"Var Assign:"<<f.varassign);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"Var Store :"<<f.varstore);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"Uniq Load :"<<f.uniqload);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"Uniq Store:"<<f.uniqstore);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"Global Var :"<<f.globalvar);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"Local Var :"<<f.localvar);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"Same Load Tot :"<<f.sameloadtot);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"Same Store Tot :"<<f.samestoretot);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"Same Load Var :"<<f.sameloadvar);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"Same Store Var :"<<f.samestorevar);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"Avg Same Load  :"<<f.avgsameload);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"Avg Same Store :"<<f.avgsamestore);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"Function Calls :"<<f.functioncalls);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"Avg Func Params :"<<f.avgFuncParam);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"Recursive Calls :"<<f.recursiveCall);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"Pointer Alloc :"<<f.pointerAlloc);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"% Var Used :"<<f.varUsed);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"% Var Assign :"<<f.varAssign);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"Max Call Depth :"<<f.maxCallDepth);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"Min Call Depth :"<<f.minCallDepth);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"Avg Call Depth :"<<f.avgCallDepth);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"Array Vars :"<<f.arrayVars);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"Array Store :"<<f.arrayStore);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"Array Load :"<<f.arrayLoad);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"Max Array Size :"<<f.maxArraySize);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"Min Array Size :"<<f.minArraySize);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"Float Type :"<<f.floatTy);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"Int Type :"<<f.intTy);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"Float Type Arith :"<<f.floatTyArith);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"Int Type Arith :"<<f.intTyArith);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"Int Type Log:"<<f.intTyLog);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"Basic Blocks :"<<f.basicBlocks);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"Null Comparisons :"<<f.nullComp);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"Loop Count :"<<f.loopCount);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"Average Loop Depth :"<<f.avgLoopDepth);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"Average Loop Exits :"<<f.avgLoopExits);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"High Inst Cnt Loops :"<<f.loopHighInstCnt);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"Avg Loops BB :"<<f.avgBBLoops);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"Cond True Loops :"<<f.condTrueLoops);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"Equal Comp :"<<f.eqCmp);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"Try Block :"<<f.tryBlock);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"catch Block :"<<f.catchBlock);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"Avg Pred :"<<f.avgPred);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"Avg Succ :"<<f.avgSucc);
+	DEBUG(dbgs()<<"\n");
+	DEBUG(dbgs()<<"Side Ent :"<<f.sideEnt);
+	DEBUG(dbgs()<<"\n");
+		
+	DEBUG(dbgs()<<"\n");
+}
 
 struct MLFeatures : public ModulePass {
         static char ID; 
@@ -86,6 +184,7 @@ struct MLFeatures : public ModulePass {
 	std::map<Loop *,int> depthCount;
 	std::map<Loop *,long> iterCount;
 	std::map<Loop *, int> condPresent;
+	std::map<Function *, std::vector< struct features> > pathFeatureCollecn;
 	void getAnalysisUsage(AnalysisUsage &AU) const;
 	int countCond(std::vector<Instruction *> ,int *);
 	void countVarAssignments(std::vector<Instruction *>, int *load, int *store,int *uniql, int *uniqs);
@@ -99,7 +198,7 @@ struct MLFeatures : public ModulePass {
 	void getBlockLevelFeatures(std::vector<BasicBlock *>,float *,float *,int *,int * tryBB, int *catchBB);
 	void collectLoopInfo();
 	void collectLoopFeatures(std::vector<BasicBlock *>, int * loopCount, float  * avgLoopDepth, float * avgLoopExits,int *loopHighInstCnt, float  *avgBBLoops,int * trueCondLoops);
-	int countInstAndBB(Loop *L,int *bbCount,int *insCount);
+	void countInstAndBB(Loop *L,int *bbCount,int *insCount);
 };
 
 
@@ -183,9 +282,9 @@ void MLFeatures::getSameLoadStoreCount(std::vector<Instruction *> path,int *same
 						f=1;
 						sameload++;
 					}
-					if(f)
-						varl++;
 				}	
+				if(f)
+					varl++;
 
 			}
 		}
@@ -199,9 +298,9 @@ void MLFeatures::getSameLoadStoreCount(std::vector<Instruction *> path,int *same
 						f=1;
 						samestore++;
 					}
-					if(f)
-						vars++;
 				}	
+				if(f)
+					vars++;
 
 			}
 		}
@@ -239,12 +338,22 @@ void MLFeatures::getFunctionFeatures(std::vector<Instruction *> path, int * call
 	*calls=c;
 	if(c>0)
 		*avgpara= p/(float)c;
+	else
+		*avgpara=0;
 	*recCall=rc;
-	*maxNest=maxN;
-	*minNest=minN;
+	if(c>0){
+		*maxNest=maxN;
+		*minNest=minN;
+	}
+	else{
+		*maxNest=0;
+		*minNest=0;
+	}	
 	if(c>0)
 		*avgNest=totNest/(float)c;
 
+	else
+		*avgNest=0;
 }
 
 void MLFeatures::getPointerFeatures(std::vector<Instruction *>path, int * allocs){
@@ -270,6 +379,7 @@ int MLFeatures::getCallNestDepth(Function *F){
 			}
 		}
 	}
+	DEBUG(dbgs()<<"\t >>Depth of :"<<F->getName()<<" "<<depth<<"\n");
 	return depth;
 
 }
@@ -289,12 +399,15 @@ void MLFeatures::getArrayFeatures(std::vector<Instruction *> path,int *arrayVar,
 			}
 		}
 		if(AllocaInst * AI = dyn_cast<AllocaInst>(path[i])){
-			if(AI->getAllocatedType()->isArrayTy()){
-				Value *  sizeC= AI->getArraySize();
-				long size =0;
-				if(ConstantInt* CI = dyn_cast<llvm::ConstantInt>(sizeC))
-					size = CI->getZExtValue();
-				
+			Type * vtemp =AI->getAllocatedType();	
+			long size =1;	
+			while(ArrayType *at =  dyn_cast<ArrayType>(vtemp)){
+				DEBUG(dbgs()<<"\t >> Array Type:"<<*vtemp<<"\n");
+				DEBUG(dbgs()<<"\t >> ArraySize:"<<" "<<at->getNumElements()<<" "<<*vtemp->getArrayElementType()<<"\n");
+				vtemp = vtemp->getArrayElementType();
+				size*=at->getNumElements();
+			}
+			if(size>1){
 				minArraySize=min(minArraySize,size);
 				maxArraySize=max(maxArraySize,size);
 			}
@@ -303,10 +416,17 @@ void MLFeatures::getArrayFeatures(std::vector<Instruction *> path,int *arrayVar,
 	*arrayVar=arraysV;
 	*arrayStore=arrayS;
 	*arrayLoad=arrayL;
-	*maxSize=maxArraySize;
-	*minSize=minArraySize;
-}
-
+	if(arraysV >0){
+		*maxSize=maxArraySize;
+		*minSize=minArraySize;
+	}
+	else{
+		*maxSize=0;
+		*minSize=0;
+	}
+		
+}	
+	
 void MLFeatures::getInstTypeFeatures(std::vector<Instruction *> path,int *floatTy, int *intTy,int  *floatTyArith,int * intTyArith, int * intTyLog ,int * nulC){
 	int floatty=0,intty=0,farith=0,iarith=0,ilog=0;	
 	int nul=0;
@@ -360,7 +480,8 @@ void MLFeatures::getBlockLevelFeatures(std::vector<BasicBlock *> path,float  *av
 		std::string s1 = BB->getName();
 		if(s1.find("catch") != std::string::npos && s1.find("dispatch")==std::string::npos)
 			++catchB;
-		if(s1.find("try") != std::string::npos){
+		if(s1.find("try") == 0){
+			DEBUG(dbgs()<<"\t >> found try"<<BB->getName()<<"\n");
 			++tryB;
 		}
 
@@ -375,6 +496,8 @@ void MLFeatures::getBlockLevelFeatures(std::vector<BasicBlock *> path,float  *av
 		int succT = TI->getNumSuccessors();
 		succ+=succT;
 	}
+	DEBUG(dbgs()<<"\t >> Pred Tot:"<<pred<<"\n");
+	DEBUG(dbgs()<<"\t >> Succ Tot:"<<succ<<"\n");
 	*avgPred=pred/(float)path.size();
 	*avgSucc=succ/(float)path.size();
 	*sideEnt=sent;
@@ -382,9 +505,18 @@ void MLFeatures::getBlockLevelFeatures(std::vector<BasicBlock *> path,float  *av
 	*catchBB=catchB;
 }
 
+void getSubLoops(Loop *l,std::vector<Loop *> &loops){
+        std::vector<Loop*> subLoops = l->getSubLoops();
+        for(int i=0;i<subLoops.size();++i){
+                loops.push_back(subLoops[i]);
+                getSubLoops(subLoops[i],loops);
+        }    
+}
+
 int nestLoop(Loop *L){
 	int maxDepth =L->getLoopDepth();
 	std::vector<Loop *> subLoops;
+	getSubLoops(L,subLoops);
 	for(int i = 0;i<subLoops.size();++i){
 		if(subLoops[i]->getLoopDepth()>maxDepth)
 			maxDepth=subLoops[i]->getLoopDepth();
@@ -393,13 +525,14 @@ int nestLoop(Loop *L){
 
 }
 
-int MLFeatures::countInstAndBB(Loop *L,int *bbCount,int *insCount){
+void MLFeatures::countInstAndBB(Loop *L,int *bbCount,int *insCount){
 	int bb=0,ins=0,cond=0;
 	for(Loop::block_iterator block = L->block_begin(), y = L->block_end(); block!= y; ++block){
 		++bb;
 		std::string s1=(*block)->getName().str();
 		if(s1.find("cond") !=std::string::npos)
 			cond=1;
+		
 		for (BasicBlock::iterator i = (*block)->begin(), ie = (*block)->end(); i != ie; ++i){
 			++ins;
 		}
@@ -415,13 +548,20 @@ int MLFeatures::countInstAndBB(Loop *L,int *bbCount,int *insCount){
 }
 
 void MLFeatures::collectLoopInfo(){
+	DEBUG(dbgs()<<"\t >> Collecting Loop info\n");
+
+	if(!LI) return;
 	for (LoopInfo::iterator i = LI->begin(), e =LI->end(); i != e; ++i){
 		Loop *L =*i;
 		depthCount[L]=nestLoop(L);
+		DEBUG(dbgs()<<"\t >> Depth of "<<L->getHeader()->getName()<<" "<<depthCount[L]<<"\n");
+
 		int insC,bbC;
 		countInstAndBB(L,&insC,&bbC);
+
 		instCount[L]=insC;
 		bbCount[L]=bbC;
+		DEBUG(dbgs()<<"\t >> Loop BB:"<<bbCount[L]<<"\n");
 		if (SE->hasLoopInvariantBackedgeTakenCount(L)) {
     			const SCEV *upperBound = SE->getBackedgeTakenCount(L);
     			if (isa<SCEVConstant>(upperBound)) {
@@ -434,7 +574,8 @@ void MLFeatures::collectLoopInfo(){
 		SmallVector<BasicBlock *, 8> ExitBlocks;
 		L->getExitingBlocks(ExitBlocks);
 		exitsCount[L]=ExitBlocks.size();
-		std::vector<Loop *> subLoops = L->getSubLoops();
+		std::vector<Loop *> subLoops; 
+		getSubLoops(L,subLoops);
 		for(int j=0;j<subLoops.size();++j){
 			depthCount[subLoops[j]]=nestLoop(subLoops[j]);
 			countInstAndBB(subLoops[j],&insC,&bbC);
@@ -456,14 +597,16 @@ void MLFeatures::collectLoopInfo(){
 
 	
 	}
+
 }
+
 
 void MLFeatures::collectLoopFeatures(std::vector<BasicBlock *> path, int * loopCount,float  * avgLoopDepth, float * avgLoopExits,int *loopHighInstCnt, float *avgBBLoops, int *condTrueLoops){
 	std::map<Loop *, int> loopTrack;
 	int lc=0,totDepth=0,totExits=0,totBB=0,highInst=0,trueCond=0;
 	for(int i=0;i<path.size();++i){
 		Loop * L = LI->getLoopFor(path[i]);
-		if(loopTrack[L]!=1){
+		if(L && loopTrack[L]!=1){
 			++lc;
 			loopTrack[L]=1;
 			totDepth+=depthCount[L];
@@ -474,6 +617,7 @@ void MLFeatures::collectLoopFeatures(std::vector<BasicBlock *> path, int * loopC
 			if(condPresent[L]==0)
 				trueCond++;
 		}
+
 			
 	}
 	*loopCount=lc;
@@ -521,6 +665,7 @@ bool MLFeatures::runOnModule(Module &M) {
 			}
 
 		}
+		DEBUG(dbgs()<<"\t >> Uniq Var or F:"<<F->getName()<<" "<<uniqVars[F]<<"\n");
 	}
 
 
@@ -529,9 +674,15 @@ bool MLFeatures::runOnModule(Module &M) {
  		if(!FF.isDeclaration()){
 			LI = &getAnalysis<LoopInfo>(FF);
 			SE=&getAnalysis<ScalarEvolution>(FF);
+			errs()<<"---Running for Function:"<<F->getName()<<"\n";
+			collectLoopInfo();
 		}
-		errs()<<"---Running for Function:"<<F->getName()<<"\n";
 		for(int i=0;i<MS->expandedPath[F].size();++i){
+				
+			for(int k=0;k<MS->pathCollecn2[F][i].size();++k){
+				DEBUG(dbgs()<<MS->pathCollecn2[F][i][k]->getName()<<" ");
+			}
+			DEBUG(dbgs()<<"\n");
 			struct features pathFeatures;
 			pathFeatures.instcount=MS->expandedPath[F][i].size();
 			int cond = countCond(MS->expandedPath[F][i],&pathFeatures.eqCmp);                	
@@ -540,20 +691,41 @@ bool MLFeatures::runOnModule(Module &M) {
 			countVarAssignments(MS->expandedPath[F][i],&load,&store,&pathFeatures.uniqload,&pathFeatures.uniqstore);
 			pathFeatures.varassign=load;
 			pathFeatures.varstore=store;
-			pathFeatures.varUsed= pathFeatures.uniqload/(float)uniqVars[F];
-			pathFeatures.varAssign= pathFeatures.uniqstore/(float)uniqVars[F];
+			if(uniqVars[F]){
+				pathFeatures.varUsed= pathFeatures.uniqload/(float)uniqVars[F];
+				pathFeatures.varAssign= pathFeatures.uniqstore/(float)uniqVars[F];
+			}
+			else{
+				pathFeatures.varUsed=0; 
+				pathFeatures.varAssign= 0;
+
+			}
 			int local,global;
 			getGlobalCount(MS->expandedPath[F][i],&local,&global);
 			pathFeatures.localvar=local;
 			pathFeatures.globalvar=global;
 			getSameLoadStoreCount(MS->expandedPath[F][i],&pathFeatures.sameloadtot,&pathFeatures.samestoretot,&pathFeatures.sameloadvar,&pathFeatures.samestorevar); 
-			pathFeatures.avgsameload= pathFeatures.sameloadtot/(float)pathFeatures.uniqload;
-			pathFeatures.avgsamestore = pathFeatures.samestoretot/(float)pathFeatures.uniqstore;
+			if(pathFeatures.uniqload!=0)
+				pathFeatures.avgsameload= pathFeatures.sameloadtot/(float)pathFeatures.uniqload;
+			else
+				 pathFeatures.avgsameload=0;
+
+			if(pathFeatures.uniqstore!=0)
+				pathFeatures.avgsamestore = pathFeatures.samestoretot/(float)pathFeatures.uniqstore;
+			
+			else
+				pathFeatures.avgsamestore=0;
 			getFunctionFeatures(MS->expandedPath[F][i],&pathFeatures.functioncalls,&pathFeatures.avgFuncParam,&pathFeatures.recursiveCall,&pathFeatures.maxCallDepth,&pathFeatures.minCallDepth,&pathFeatures.avgCallDepth);
 			getPointerFeatures(MS->expandedPath[F][i],&pathFeatures.pointerAlloc);		
 			//getInstTypeFeatures(MS->expandedPath[F][i]);			
 			getArrayFeatures(MS->expandedPath[F][i],&pathFeatures.arrayVars,&pathFeatures.arrayStore,&pathFeatures.arrayLoad,&pathFeatures.maxArraySize,&pathFeatures.minArraySize);
 			getInstTypeFeatures(MS->expandedPath[F][i],&pathFeatures.floatTy, &pathFeatures.intTy,&pathFeatures.floatTyArith,&pathFeatures.intTyArith, &pathFeatures.intTyLog,&pathFeatures.nullComp );
+			getBlockLevelFeatures(MS->pathCollecn2[F][i],&pathFeatures.avgSucc,&pathFeatures.avgPred,&pathFeatures.sideEnt,&pathFeatures.tryBlock,&pathFeatures.catchBlock);
+			collectLoopFeatures(MS->pathCollecn2[F][i],&pathFeatures.loopCount,&pathFeatures.avgLoopDepth,&pathFeatures.avgLoopExits,&pathFeatures.loopHighInstCnt,&pathFeatures.avgBBLoops,&pathFeatures.condTrueLoops);
+			pathFeatures.basicBlocks=MS->pathCollecn2[F][i].size();
+			pathFeatureCollecn[F].push_back(pathFeatures);
+			
+			printFeatures(pathFeatures);
 		}       	 
 
 	}	
