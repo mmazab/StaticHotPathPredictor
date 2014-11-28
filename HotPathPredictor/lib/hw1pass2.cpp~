@@ -1,0 +1,113 @@
+/*
+ * File: hw1pass2.c
+ *
+ * Description:
+ *  This is a hw1pass source file for a library.  It helps to demonstrate
+ *  how to setup a project that uses the LLVM build system, header files,
+ *  and libraries.
+ */
+
+
+#include "llvm/Pass.h"
+#include "llvm/IR/Function.h"
+#include "llvm/Support/raw_ostream.h"
+#include "llvm/Analysis/ProfileInfo.h"
+#include "llvm/IR/Instruction.h"
+#include "llvm/Support/CFG.h"
+#include "llvm/Analysis/LoopPass.h"
+#include "llvm/Analysis/LoopInfo.h"
+#include <fstream>
+#include <iostream>
+
+using namespace std;
+/* LLVM Header File
+#include "llvm/Support/DataTypes.h"
+*/
+
+/* Header file global to this project */
+#include <hw1pass2.h>
+#include "LAMP/LAMPLoadProfile.h"
+#include "LAMP/LAMPProfiling.h"
+
+
+using namespace llvm;
+
+namespace {
+
+struct hw1pass2 : public FunctionPass {
+	static char ID;
+	ProfileInfo* PI;
+	LAMPLoadProfile* LLP;
+	hw1pass2() : FunctionPass(ID){}
+	
+	virtual bool runOnFunction(Function &F) {
+		PI = &getAnalysis<ProfileInfo>();
+		LLP = &getAnalysis<LAMPLoadProfile>();
+
+		std::map<Instruction*, unsigned int> loadMap;
+		std::map<Instruction*, unsigned int>::iterator loadMapIterator;
+		std::map<Instruction*, unsigned int>::iterator tmpIterator;
+		std::vector<Instruction*> storeInstruction;
+
+		std::map<unsigned int, Instruction*> idInstMap =  LLP->IdToInstMap; // Inst* -> InstId
+		std::map<unsigned int, Instruction*>::iterator idInstIt;
+		std::map<Instruction*, unsigned int> instIdMap = LLP->InstToIdMap;   // InstID -> Inst*
+		std::map<Instruction*, unsigned int>::iterator instIdIt;
+		std::map<std::pair<Instruction*, Instruction*>*, unsigned int> depTimesMap = LLP->DepToTimesMap; 
+		std::map<std::pair<Instruction*, Instruction*>*, unsigned int>::iterator depTimesIt;
+
+		for (depTimesIt= depTimesMap.begin(); depTimesIt!= depTimesMap.end(); ++depTimesIt){
+			std::pair<Instruction*, Instruction*>* depPair = depTimesIt->first;
+			Instruction* loadInst = depPair->first;
+			Instruction* storeInst = depPair->second;
+			if(loadInst->getOpcode()==Instruction::Load && storeInst->getOpcode()==Instruction::Store){
+				tmpIterator = loadMap.find(loadInst);
+				if(tmpIterator == loadMap.end()){
+					loadMap.insert(std::pair<Instruction*, unsigned int>(loadInst, depTimesIt->second));
+				}else{
+				  tmpIterator->second += depTimesIt->second;
+				}
+			}
+		}
+
+		for( instIdIt = instIdMap.begin(); instIdIt != instIdMap.end(); ++instIdIt){
+			Instruction* loadIn = instIdIt->first;
+			if(loadIn->getOpcode() == Instruction::Load){
+			tmpIterator = loadMap.find(loadIn);
+			int count = 0;
+			if(tmpIterator == loadMap.end()){ //This load function is not in my dependency map i.e print 0
+				count = 0;
+			}else{
+				count =  tmpIterator->second;
+			}
+			int execCount = PI->getExecutionCount(loadIn->getParent());
+			float per = ((float) count/(float)execCount) ;
+			errs() << instIdIt->second << "\t" << count << "/" << execCount <<"\n" ;
+			printStatsFile(instIdIt->second, count, execCount);
+		}
+		}
+		return false; //return true if you modified the code
+	}
+
+	void printStatsFile(int Id, int aliasCount,  int execCount){
+		ofstream myfile;
+		const char * fileName= "x.ldstats"; 
+  		myfile.open (fileName,ios::app);
+		float otherPer = ((float) aliasCount/(float)execCount) ;
+		myfile << Id << "\t" <<otherPer<<"\n";
+		myfile.close();
+	}
+	
+	void getAnalysisUsage(AnalysisUsage &AU) const {
+		AU.addRequired<ProfileInfo>();
+		AU.addRequired<LAMPLoadProfile>();
+	}
+	};
+}
+
+
+char hw1pass2::ID = 0;
+
+static RegisterPass<hw1pass2> X("hw1pass2", "Statistic Computation Pass", false, false );
+
+

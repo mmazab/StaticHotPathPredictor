@@ -1,0 +1,14 @@
+##===- projects/hw1pass/lib/Makefile ------------------------*- Makefile -*-===##
+
+#
+# Relative path to the top of the source tree.
+#
+LEVEL=..
+
+#
+# List all of the subdirectories that we will compile.
+#
+LIBRARYNAME=mlanalyzer
+LOADABLE_MODULE=1
+
+include $(LEVEL)/Makefile.common

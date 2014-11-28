@@ -1,0 +1,14 @@
+<project name="dswp_support" default="install">
+  <description>
+    Compiler Scripts
+  </description>  
+
+  <import file="../build.xml.subdir"/>
+
+  <!-- Files to install -->
+  <patternset id="package.datafiles">
+     <include name="lamp_hooks.hxx"/>
+     <include name="lamp_hooks.cxx"/>
+  </patternset>
+
+</project>

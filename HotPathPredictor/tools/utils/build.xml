@@ -1,0 +1,42 @@
+<project name="memory_map_support" default="install">
+  <description>
+    Compiler Scripts
+  </description>  
+
+  <import file="../build.xml.subdir"/>
+
+  <!-- Files to install -->
+  <patternset id="package.datafiles">
+     <include name="MemoryMap.hxx"/>
+     <include name="MemoryMap.cxx"/>
+     <include name="InstructionMap.hxx"/>
+     <include name="LoopHierarchy.hxx"/>
+     <include name="ValueProfile.hxx"/>
+     <include name="Profile.hxx"/>
+     <include name="MemoryProfile.hxx"/>
+     <include name="CircularQueue.hxx"/>
+     <include name="profile_function_wrappers.h"/>
+     <include name="Locks.hxx"/>
+     <include name="utils.hxx"/>
+     <include name="utils.cxx"/>
+  </patternset>
+
+  <!-- Files to install -->
+  <patternset id="package.debugdatafiles">
+     <include name="debug_new.hxx"/>
+     <include name="debug_new.cxx"/>
+  </patternset>
+
+  <!-- Install compiler scripts -->
+  <target name="install-debug" depends="init,install" description="Install ${subproject.name} debug support code">
+
+    <!-- Copy files -->
+    <copy todir="${install.data.dir}" verbose="true" overwrite="true" >
+      <fileset dir="${base.dir}">
+        <patternset refid="package.debugdatafiles"/>
+      </fileset>
+    </copy>
+  </target>
+
+
+</project>
