@@ -216,6 +216,7 @@ void MLFeatures::getAnalysisUsage(AnalysisUsage &AU) const{
 
 int MLFeatures::countCond(std::vector<Instruction *> path, int * eqCmp ){
 	int cond=0;
+	*eqCmp=0;
 	for(size_t i=0;i<path.size();++i){
 		if(ICmpInst * icmp = dyn_cast<ICmpInst>(path[i])){
 			++cond;
@@ -377,7 +378,7 @@ int MLFeatures::getCallNestDepth(Function *F){
 }
 
 void MLFeatures::getArrayFeatures(std::vector<Instruction *> path,int *arrayVar,int * arrayStore, int *arrayLoad,long *maxSize, long * minSize){
-	int arraysV=0,arrayL=0,arrayS=0;
+	int arraysV=0,arrayL=0,arrayS=0,f=0;
 	long minArraySize=1e10,maxArraySize=-1;
 	for(size_t i=0;i<path.size();++i){
 		if(GetElementPtrInst * gep = dyn_cast<GetElementPtrInst>(path[i])){
@@ -393,13 +394,14 @@ void MLFeatures::getArrayFeatures(std::vector<Instruction *> path,int *arrayVar,
 		if(AllocaInst * AI = dyn_cast<AllocaInst>(path[i])){
 			Type * vtemp =AI->getAllocatedType();	
 			long size =1;	
+			f=1;
 			while(ArrayType *at =  dyn_cast<ArrayType>(vtemp)){
 				DEBUG(dbgs()<<"\t >> Array Type:"<<*vtemp<<"\n");
 				DEBUG(dbgs()<<"\t >> ArraySize:"<<" "<<at->getNumElements()<<" "<<*vtemp->getArrayElementType()<<"\n");
 				vtemp = vtemp->getArrayElementType();
 				size*=at->getNumElements();
 			}
-			if(size>1){
+			if(size>0){
 				minArraySize=min(minArraySize,size);
 				maxArraySize=max(maxArraySize,size);
 			}
@@ -408,7 +410,7 @@ void MLFeatures::getArrayFeatures(std::vector<Instruction *> path,int *arrayVar,
 	*arrayVar=arraysV;
 	*arrayStore=arrayS;
 	*arrayLoad=arrayL;
-	if(arraysV >0){
+	if(arraysV >0 && f){
 		*maxSize=maxArraySize;
 		*minSize=minArraySize;
 	}
