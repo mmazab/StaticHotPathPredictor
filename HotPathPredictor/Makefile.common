@@ -10,10 +10,10 @@ LLVM_SRC_ROOT = /home/mahmoud/llvm
 LLVM_OBJ_ROOT = /home/mahmoud/build
 
 # Set the directory root of this project's source files
-PROJ_SRC_ROOT := $(subst //,/,/home/mahmoud/Documents/Compilers/Project/HotPathAnalyzer)
+PROJ_SRC_ROOT := $(subst //,/,/home/mahmoud/Documents/Compilers/Project/HotPathPredictor)
 
 # Set the root directory of this project's object files
-PROJ_OBJ_ROOT := $(subst //,/,/home/mahmoud/Documents/Compilers/Project/HotPathAnalyzer)
+PROJ_OBJ_ROOT := $(subst //,/,/home/mahmoud/Documents/Compilers/Project/HotPathPredictor)
 
 # Set the root directory of this project's install prefix
 PROJ_INSTALL_ROOT := /usr/local

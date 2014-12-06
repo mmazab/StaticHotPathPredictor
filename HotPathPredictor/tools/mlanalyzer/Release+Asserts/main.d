@@ -1,7 +1,7 @@
-/home/mahmoud/Documents/Compilers/Project/HotPathAnalyzer/tools/mlanalyzer/Release+Asserts/main.o \
-  /home/mahmoud/Documents/Compilers/Project/HotPathAnalyzer/tools/mlanalyzer/Release+Asserts/main.d: \
+/home/mahmoud/Documents/Compilers/Project/HotPathPredictor/tools/mlanalyzer/Release+Asserts/main.o \
+  /home/mahmoud/Documents/Compilers/Project/HotPathPredictor/tools/mlanalyzer/Release+Asserts/main.d: \
   main.cpp \
-  /home/mahmoud/Documents/Compilers/Project/HotPathAnalyzer/include/mlanalyzer.h \
+  /home/mahmoud/Documents/Compilers/Project/HotPathPredictor/include/mlanalyzer.h \
   /home/mahmoud/llvm/include/llvm/Pass.h \
   /home/mahmoud/llvm/include/llvm/Support/Compiler.h \
   /home/mahmoud/build/include/llvm/Config/llvm-config.h \
@@ -76,7 +76,7 @@
   /home/mahmoud/llvm/include/llvm/Analysis/ProfileInfo.h \
   /home/mahmoud/llvm/include/llvm/Support/Format.h
 
-/home/mahmoud/Documents/Compilers/Project/HotPathAnalyzer/include/mlanalyzer.h:
+/home/mahmoud/Documents/Compilers/Project/HotPathPredictor/include/mlanalyzer.h:
 
 /home/mahmoud/llvm/include/llvm/Pass.h:
 

@@ -1,5 +1,5 @@
-/home/mahmoud/Documents/Compilers/Project/HotPathAnalyzer/lib/Release+Asserts/LAMPProfiling.o \
-  /home/mahmoud/Documents/Compilers/Project/HotPathAnalyzer/lib/Release+Asserts/LAMPProfiling.d: \
+/home/mahmoud/Documents/Compilers/Project/HotPathPredictor/lib/Release+Asserts/LAMPProfiling.o \
+  /home/mahmoud/Documents/Compilers/Project/HotPathPredictor/lib/Release+Asserts/LAMPProfiling.d: \
   LAMPProfiling.cpp /home/mahmoud/llvm/include/llvm/IR/Constants.h \
   /home/mahmoud/llvm/include/llvm/ADT/APFloat.h \
   /home/mahmoud/llvm/include/llvm/ADT/APInt.h \
@@ -95,7 +95,7 @@
   /home/mahmoud/llvm/include/llvm/Support/PrettyStackTrace.h \
   /home/mahmoud/llvm/include/llvm/Analysis/Passes.h \
   /home/mahmoud/llvm/include/llvm/Support/Debug.h \
-  /home/mahmoud/Documents/Compilers/Project/HotPathAnalyzer/include/LAMP/LAMPProfiling.h
+  /home/mahmoud/Documents/Compilers/Project/HotPathPredictor/include/LAMP/LAMPProfiling.h
 
 /home/mahmoud/llvm/include/llvm/IR/Constants.h:
 
@@ -287,4 +287,4 @@
 
 /home/mahmoud/llvm/include/llvm/Support/Debug.h:
 
-/home/mahmoud/Documents/Compilers/Project/HotPathAnalyzer/include/LAMP/LAMPProfiling.h:
+/home/mahmoud/Documents/Compilers/Project/HotPathPredictor/include/LAMP/LAMPProfiling.h:

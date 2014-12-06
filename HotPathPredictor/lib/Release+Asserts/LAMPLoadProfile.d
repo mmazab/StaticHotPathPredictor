@@ -1,5 +1,5 @@
-/home/mahmoud/Documents/Compilers/Project/HotPathAnalyzer/lib/Release+Asserts/LAMPLoadProfile.o \
-  /home/mahmoud/Documents/Compilers/Project/HotPathAnalyzer/lib/Release+Asserts/LAMPLoadProfile.d: \
+/home/mahmoud/Documents/Compilers/Project/HotPathPredictor/lib/Release+Asserts/LAMPLoadProfile.o \
+  /home/mahmoud/Documents/Compilers/Project/HotPathPredictor/lib/Release+Asserts/LAMPLoadProfile.d: \
   LAMPLoadProfile.cpp /home/mahmoud/llvm/include/llvm/IR/Module.h \
   /home/mahmoud/llvm/include/llvm/ADT/OwningPtr.h \
   /home/mahmoud/llvm/include/llvm/Support/Compiler.h \
@@ -76,7 +76,7 @@
   /home/mahmoud/llvm/include/llvm/IR/DataLayout.h \
   /home/mahmoud/llvm/include/llvm/ADT/IndexedMap.h \
   /home/mahmoud/llvm/include/llvm/ADT/STLExtras.h \
-  /home/mahmoud/Documents/Compilers/Project/HotPathAnalyzer/include/LAMP/LAMPLoadProfile.h
+  /home/mahmoud/Documents/Compilers/Project/HotPathPredictor/include/LAMP/LAMPLoadProfile.h
 
 /home/mahmoud/llvm/include/llvm/IR/Module.h:
 
@@ -230,4 +230,4 @@
 
 /home/mahmoud/llvm/include/llvm/ADT/STLExtras.h:
 
-/home/mahmoud/Documents/Compilers/Project/HotPathAnalyzer/include/LAMP/LAMPLoadProfile.h:
+/home/mahmoud/Documents/Compilers/Project/HotPathPredictor/include/LAMP/LAMPLoadProfile.h:

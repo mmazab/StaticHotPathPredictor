@@ -1,5 +1,5 @@
-/home/mahmoud/Documents/Compilers/Project/HotPathAnalyzer/lib/Release+Asserts/features.o \
-  /home/mahmoud/Documents/Compilers/Project/HotPathAnalyzer/lib/Release+Asserts/features.d: \
+/home/mahmoud/Documents/Compilers/Project/HotPathPredictor/lib/Release+Asserts/features.o \
+  /home/mahmoud/Documents/Compilers/Project/HotPathPredictor/lib/Release+Asserts/features.d: \
   features.cpp /home/mahmoud/llvm/include/llvm/Pass.h \
   /home/mahmoud/llvm/include/llvm/Support/Compiler.h \
   /home/mahmoud/build/include/llvm/Config/llvm-config.h \
@@ -77,7 +77,7 @@
   /home/mahmoud/llvm/include/llvm/Support/ConstantRange.h \
   /home/mahmoud/llvm/include/llvm/Support/ValueHandle.h \
   /home/mahmoud/llvm/include/llvm/Analysis/ScalarEvolutionExpressions.h \
-  /home/mahmoud/Documents/Compilers/Project/HotPathAnalyzer/include/mlanalyzer.h \
+  /home/mahmoud/Documents/Compilers/Project/HotPathPredictor/include/mlanalyzer.h \
   /home/mahmoud/llvm/include/llvm/Analysis/BranchProbabilityInfo.h \
   /home/mahmoud/llvm/include/llvm/Support/BranchProbability.h \
   /home/mahmoud/llvm/include/llvm/Analysis/ProfileInfo.h \
@@ -237,7 +237,7 @@
 
 /home/mahmoud/llvm/include/llvm/Analysis/ScalarEvolutionExpressions.h:
 
-/home/mahmoud/Documents/Compilers/Project/HotPathAnalyzer/include/mlanalyzer.h:
+/home/mahmoud/Documents/Compilers/Project/HotPathPredictor/include/mlanalyzer.h:
 
 /home/mahmoud/llvm/include/llvm/Analysis/BranchProbabilityInfo.h:
 

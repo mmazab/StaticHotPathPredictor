@@ -12,8 +12,8 @@
 #include "llvm/Support/Debug.h"
 #include "llvm/Analysis/ScalarEvolution.h"
 #include "llvm/Analysis/ScalarEvolutionExpressions.h"
-#include "mlanalyzer.h"
 #include <vector>
+#include "mlanalyzer.h"
 #include <fstream>
 #include <iostream>
 #include <map>
@@ -216,7 +216,7 @@ void MLFeatures::getAnalysisUsage(AnalysisUsage &AU) const{
 
 int MLFeatures::countCond(std::vector<Instruction *> path, int * eqCmp ){
 	int cond=0;
-	for(size_t i=0;i<path.size();++i){
+	for(int i=0;i<path.size();++i){
 		if(ICmpInst * icmp = dyn_cast<ICmpInst>(path[i])){
 			++cond;
 			if(icmp->isEquality())
@@ -229,7 +229,7 @@ int MLFeatures::countCond(std::vector<Instruction *> path, int * eqCmp ){
 void  MLFeatures::countVarAssignments(std::vector<Instruction *> path,int *load,int *store,int * uniql, int *uniqs){
 	int varl=0,vars=0,ul=0,us=0;
 	std::map<Value *,int> present1,present2;
-	for(size_t i=0;i<path.size();++i){
+	for(int i=0;i<path.size();++i){
 		if(isa<LoadInst>(path[i])){
 			if(present1[path[i]->getOperand(0)]!=1){
 				++ul;
@@ -255,28 +255,33 @@ void  MLFeatures::countVarAssignments(std::vector<Instruction *> path,int *load,
 
 void MLFeatures::getGlobalCount(std::vector<Instruction *> path, int * local, int *global){
 	int l=0,g=0;
-	for(size_t i=0;i<path.size();++i){
+	for(int i=0;i<path.size();++i){
 		if(isa<LoadInst>(path[i])){
 			Value * v = path[i]->getOperand(0);
 			if(isa<GlobalVariable>(v))
 				++g;
 			else
 				++l;
+
+			
 		}
+
 	}
 	*local=l;
 	*global=g;
+
 }
 
 void MLFeatures::getSameLoadStoreCount(std::vector<Instruction *> path,int *sameloadtot, int *samestoretot, int *sameloadvar, int *samestorevar){
 	int sameload=0,samestore=0,varl=0,vars=0;
 	std::map<Value *,int> present,present2;
-	for(size_t i=0;i<path.size();++i){
+	for(int i=0;i<path.size();++i){
 		if(isa<LoadInst>(path[i])){
+			
 			if(present[path[i]->getOperand(0)]!=1){
 				int f=0;
 				present[path[i]->getOperand(0)]=1;
-				for(size_t j=i+1;j<path.size();++j){
+				for(int j=i+1;j<path.size();++j){
 					if(isa<LoadInst>(path[j]) && (path[j]->getOperand(0) == path[i]->getOperand(0)) ){
 						f=1;
 						sameload++;
@@ -284,13 +289,15 @@ void MLFeatures::getSameLoadStoreCount(std::vector<Instruction *> path,int *same
 				}	
 				if(f)
 					varl++;
+
 			}
 		}
 		if(isa<StoreInst>(path[i])){
+			
 			if(present2[path[i]->getOperand(1)]!=1){
 				int f=0;
 				present2[path[i]->getOperand(1)]=1;
-				for(size_t j=i+1;j<path.size();++j){
+				for(int j=i+1;j<path.size();++j){
 					if(isa<StoreInst>(path[j]) && (path[j]->getOperand(1) == path[i]->getOperand(1)) ){
 						f=1;
 						samestore++;
@@ -298,8 +305,10 @@ void MLFeatures::getSameLoadStoreCount(std::vector<Instruction *> path,int *same
 				}	
 				if(f)
 					vars++;
+
 			}
 		}
+
 	}
 	*sameloadtot=sameload;
 	*samestoretot=samestore;
@@ -317,7 +326,7 @@ long min(long a,long b){
 }
 void MLFeatures::getFunctionFeatures(std::vector<Instruction *> path, int * calls, float *avgpara, int * recCall,int *maxNest,int  *minNest,float *avgNest){
 	int c=0,p=0,rc=0,maxN=-1,minN=999,totNest=0;
-	for(size_t i=0;i<path.size();++i){
+	for(int i=0;i<path.size();++i){
 		if(CallInst *I = dyn_cast<CallInst>(path[i])){
 			++c;
 			p+=(I->getNumArgOperands());
@@ -346,24 +355,27 @@ void MLFeatures::getFunctionFeatures(std::vector<Instruction *> path, int * call
 	}	
 	if(c>0)
 		*avgNest=totNest/(float)c;
+
 	else
 		*avgNest=0;
 }
 
 void MLFeatures::getPointerFeatures(std::vector<Instruction *>path, int * allocs){
 	int alloc=0;
-	for(size_t i=0;i<path.size();++i){
+	for(int i=0;i<path.size();++i){
 		if(isa<AllocaInst>(path[i]))
 			++alloc;
 	}
 	*allocs=alloc;
+
 }
+
 
 int MLFeatures::getCallNestDepth(Function *F){
 	int depth=0;
 	
-        for(size_t i=0;i<MS->expandedPath[F].size();++i){
-               for(size_t j=0;j<MS->expandedPath[F][i].size();++j){
+        for(int i=0;i<MS->expandedPath[F].size();++i){
+               for(int j=0;j<MS->expandedPath[F][i].size();++j){
 			if(CallInst * I = dyn_cast<CallInst>(MS->expandedPath[F][i][j])){
 				Function * FF = I->getCalledFunction();
 			        if(recFun[FF]!=1)	
@@ -379,7 +391,7 @@ int MLFeatures::getCallNestDepth(Function *F){
 void MLFeatures::getArrayFeatures(std::vector<Instruction *> path,int *arrayVar,int * arrayStore, int *arrayLoad,long *maxSize, long * minSize){
 	int arraysV=0,arrayL=0,arrayS=0;
 	long minArraySize=1e10,maxArraySize=-1;
-	for(size_t i=0;i<path.size();++i){
+	for(int i=0;i<path.size();++i){
 		if(GetElementPtrInst * gep = dyn_cast<GetElementPtrInst>(path[i])){
 			++arraysV;
 			for(Value::use_iterator it = gep->use_begin(), ie = gep->use_end(); it!=ie; ++it){
@@ -422,7 +434,7 @@ void MLFeatures::getArrayFeatures(std::vector<Instruction *> path,int *arrayVar,
 void MLFeatures::getInstTypeFeatures(std::vector<Instruction *> path,int *floatTy, int *intTy,int  *floatTyArith,int * intTyArith, int * intTyLog ,int * nulC){
 	int floatty=0,intty=0,farith=0,iarith=0,ilog=0;	
 	int nul=0;
-	for(size_t i=0;i<path.size();++i){
+	for(int i=0;i<path.size();++i){
 		Value * v = (Value *)path[i];
 		if(v->getType()->isFloatTy() || v->getType()->isDoubleTy()){
 			++floatty;
@@ -467,7 +479,7 @@ void MLFeatures::getInstTypeFeatures(std::vector<Instruction *> path,int *floatT
 void MLFeatures::getBlockLevelFeatures(std::vector<BasicBlock *> path,float  *avgSucc,float *avgPred,int *sideEnt,int *tryBB, int *catchBB ){
 	int succ=0,pred=0,sent=0,sexit=0;
 	int tryB=0,catchB=0;
-	for(size_t i=0;i<path.size();++i){
+	for(int i=0;i<path.size();++i){
 		BasicBlock *BB = path[i];
 		std::string s1 = BB->getName();
 		if(s1.find("catch") != std::string::npos && s1.find("dispatch")==std::string::npos)
@@ -499,7 +511,7 @@ void MLFeatures::getBlockLevelFeatures(std::vector<BasicBlock *> path,float  *av
 
 void getSubLoops(Loop *l,std::vector<Loop *> &loops){
         std::vector<Loop*> subLoops = l->getSubLoops();
-        for(size_t i=0;i<subLoops.size();++i){
+        for(int i=0;i<subLoops.size();++i){
                 loops.push_back(subLoops[i]);
                 getSubLoops(subLoops[i],loops);
         }    
@@ -509,7 +521,7 @@ int nestLoop(Loop *L){
 	int maxDepth =L->getLoopDepth();
 	std::vector<Loop *> subLoops;
 	getSubLoops(L,subLoops);
-	for(size_t i = 0;i<subLoops.size();++i){
+	for(int i = 0;i<subLoops.size();++i){
 		if(subLoops[i]->getLoopDepth()>maxDepth)
 			maxDepth=subLoops[i]->getLoopDepth();
 	}
@@ -568,7 +580,7 @@ void MLFeatures::collectLoopInfo(){
 		exitsCount[L]=ExitBlocks.size();
 		std::vector<Loop *> subLoops; 
 		getSubLoops(L,subLoops);
-		for(size_t j=0;j<subLoops.size();++j){
+		for(int j=0;j<subLoops.size();++j){
 			depthCount[subLoops[j]]=nestLoop(subLoops[j]);
 			countInstAndBB(subLoops[j],&insC,&bbC);
 			instCount[subLoops[j]]=insC;
@@ -596,7 +608,7 @@ void MLFeatures::collectLoopInfo(){
 void MLFeatures::collectLoopFeatures(std::vector<BasicBlock *> path, int * loopCount,float  * avgLoopDepth, float * avgLoopExits,int *loopHighInstCnt, float *avgBBLoops, int *condTrueLoops){
 	std::map<Loop *, int> loopTrack;
 	int lc=0,totDepth=0,totExits=0,totBB=0,highInst=0,trueCond=0;
-	for(size_t i=0;i<path.size();++i){
+	for(int i=0;i<path.size();++i){
 		Loop * L = LI->getLoopFor(path[i]);
 		if(L && loopTrack[L]!=1){
 			++lc;
@@ -636,9 +648,9 @@ bool MLFeatures::runOnModule(Module &M) {
 	for(Module::iterator F = M.begin(),E=M.end();F!=E;++F){
 		tempMap.clear();
 		uniqVars[F]=0;
-		for(size_t i=0;i<MS->expandedPath[F].size();++i){
+		for(int i=0;i<MS->expandedPath[F].size();++i){
 			
-			for(size_t j=0;j<MS->expandedPath[F][i].size();++j){
+			for(int j=0;j<MS->expandedPath[F][i].size();++j){
 				if(CallInst * I = dyn_cast<CallInst>(MS->expandedPath[F][i][j])){
 					Function * FF = I->getCalledFunction();
 					if(FF == F)
@@ -660,9 +672,8 @@ bool MLFeatures::runOnModule(Module &M) {
 		DEBUG(dbgs()<<"\t >> Uniq Var or F:"<<F->getName()<<" "<<uniqVars[F]<<"\n");
 	}
 
-
 	for(Module::iterator F = M.begin(), E = M.end(); F != E; ++F) {
-        Function &FF=*F;    
+        	Function &FF=*F;    
  		if(!FF.isDeclaration()){
 			LI = &getAnalysis<LoopInfo>(FF);
 			SE=&getAnalysis<ScalarEvolution>(FF);
@@ -670,13 +681,14 @@ bool MLFeatures::runOnModule(Module &M) {
 			collectLoopInfo();
 		}
 
-		std::vector<double> pathFreqs = MS->pathCollecnFreq[&FF];
-		errs()<<"Function -----------: "<< FF.getName() << "  --> " << pathFreqs.size() <<" paths \t" << MS->expandedPath[F].size()<<" "<<MS->pathCollecn2[F].size() << "\n";
+			std::vector<double> pathFreqs = MS->pathCollecnFreq[&FF];
+			errs()<<"Function -----------: "<< FF.getName() << "  --> " << pathFreqs.size() <<" paths \t" << MS->expandedPath[F].size()<<" "<<MS->pathCollecn2[F].size() << "\n";
 
-		for(size_t i=0;i<MS->expandedPath[F].size();++i){
+
+
+		for(int i=0;i<MS->expandedPath[F].size();++i){
 			double frequency = pathFreqs[i];
-			errs()<<"---Running for Path:\t"<<i<<"\n";
-			for(size_t k=0;k<MS->pathCollecn2[F][i].size();++k){
+			for(int k=0;k<MS->pathCollecn2[F][i].size();++k){
 				DEBUG(dbgs()<<MS->pathCollecn2[F][i][k]->getName()<<" ");
 			}
 			DEBUG(dbgs()<<"\n");
@@ -786,7 +798,6 @@ void MLFeatures::printFeaturesToFile(double freq, features f){
 	  "\t"<<f.sideEnt <<
 	  "\n";
 }
-
 
 
 char MLFeatures::ID = 0;
